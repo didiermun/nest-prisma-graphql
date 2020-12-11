@@ -1,0 +1,104 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Sequence {
+  id String [pk]
+  identifier String
+  group Group [not null]
+  groupId String [not null]
+  name String
+  description String
+  table Table [not null]
+  type SequenceType [not null]
+  prefix String
+  sufix String
+  number_next Int [not null]
+  number_increment Int [not null]
+  padding Int [not null]
+  active Boolean [not null, default: true]
+
+  indexes {
+    (table, groupId) [unique]
+  }
+}
+
+Table Group {
+  id String [pk]
+  identifier String
+  name String
+  description String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Sequence Sequence
+  User User
+  Role Role
+}
+
+Table User {
+  id String [pk]
+  group Group [not null]
+  groupId String [not null]
+  identifier String
+  email String [unique, not null]
+  password String [not null]
+  name String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  roles Role
+}
+
+Table Permission {
+  id String [pk]
+  permission PermissionType [not null]
+  table Table [not null]
+  Role Role
+
+  indexes {
+    (permission, table) [unique]
+  }
+}
+
+Table Role {
+  id String [pk]
+  group Group [not null]
+  groupId String [not null]
+  code String [not null]
+  description String
+  permissions Permission
+  active Boolean [not null, default: true]
+  users User
+}
+
+Table RoleToUser {
+  rolesId String [ref: > Role.id]
+  usersId String [ref: > User.id]
+}
+
+Table PermissionToRole {
+  roleId String [ref: > Role.id]
+  permissionsId String [ref: > Permission.id]
+}
+
+Enum Table {
+  SEQUENCE
+  GROUP
+  USER
+}
+
+Enum PermissionType {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+}
+
+Enum SequenceType {
+  INCREMENTAL
+}
+
+Ref: Sequence.groupId > Group.id
+
+Ref: User.groupId > Group.id
+
+Ref: Role.groupId > Group.id

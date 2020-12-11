@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+  nest_api:
+    container_name: nest-prisma-graphql
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    networks:
+      - nest-prisma-graphql-network
+
+  postgres:
+    image: postgres:12
+    container_name: nest-prisma-graphql-pg
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - nest-prisma-graphql-network
+
+volumes:
+  postgres:
+    name: nest-priema-graphql-db
+
+networks:
+  nest-prisma-graphql-network:
+    driver: bridge

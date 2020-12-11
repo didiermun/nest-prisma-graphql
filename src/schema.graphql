@@ -1,0 +1,181 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Auth {
+  """JWT access token"""
+  accessToken: String!
+
+  """JWT refresh token"""
+  refreshToken: String!
+}
+
+input ChangePasswordInput {
+  newPassword: String!
+  oldPassword: String!
+}
+
+input CreateGroupInput {
+  description: String
+  identifier: String
+  name: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Group {
+  """Identifies the date and time when the object was created."""
+  createdAt: DateTime!
+
+  """description"""
+  description: String
+  id: ID!
+
+  """Sequencial Generated Identifier"""
+  identifier: String!
+
+  """name"""
+  name: String
+
+  """Identifies the date and time when the object was last updated."""
+  updatedAt: DateTime!
+}
+
+type GroupEdge {
+  cursor: String!
+  node: Group!
+}
+
+input GroupOrder {
+  direction: OrderDirection!
+  field: GroupOrderField!
+}
+
+"""Properties by which group connections can be ordered."""
+enum GroupOrderField {
+  createdAt
+  description
+  identifier
+  name
+  updatedAt
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  changePassword(data: ChangePasswordInput!): User!
+  createGroup(data: CreateGroupInput!): Group!
+  login(data: LoginInput!): Auth!
+  refreshToken(token: String!): Token!
+  signup(data: SignupInput!): Auth!
+  updateUser(data: UpdateUserInput!): User!
+}
+
+"""
+Possible directions in which to order a list of items when provided an `orderBy` argument.
+"""
+enum OrderDirection {
+  asc
+  desc
+}
+
+type PageInfo {
+  endCursor: String!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String!
+}
+
+type PaginatedGroup {
+  edges: [GroupEdge!]
+  nodes: [Group!]
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type Permission {
+  id: ID!
+  permission: PermissionType!
+  table: Table!
+}
+
+"""Permission Type"""
+enum PermissionType {
+  CREATE
+  DELETE
+  READ
+  UPDATE
+}
+
+type Query {
+  findManyGroup(orderBy: GroupOrder): [Group!]!
+  findManyGroupPaginated(after: String, before: String, first: Int, identifier: String, last: Int, name: String, orderBy: GroupOrder, skip: Int): PaginatedGroup!
+  me: User!
+  permz: User!
+}
+
+type Role {
+  active: Boolean!
+  code: String!
+  description: String!
+  group: Group!
+  id: ID!
+  permissions: [Permission!]!
+  users: [User!]!
+}
+
+input SignupInput {
+  email: String!
+  firstname: String
+  lastname: String
+  password: String!
+}
+
+"""Tables"""
+enum Table {
+  GROUP
+  SEQUENCE
+  USER
+}
+
+type Token {
+  """JWT access token"""
+  accessToken: String!
+
+  """JWT refresh token"""
+  refreshToken: String!
+}
+
+input UpdateUserInput {
+  name: String
+}
+
+type User {
+  """Identifies the date and time when the object was created."""
+  createdAt: DateTime!
+
+  """User e-mail."""
+  email: String!
+
+  """Tanant Class."""
+  group: Group!
+  id: ID!
+
+  """Sequencial Generated Identifier"""
+  identifier: String!
+
+  """User name."""
+  name: String!
+
+  """User Roles."""
+  roles: [Role!]!
+
+  """Identifies the date and time when the object was last updated."""
+  updatedAt: DateTime!
+}

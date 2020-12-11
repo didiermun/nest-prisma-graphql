@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
+model Sequence {
+  id               String       @id @default(cuid())
+  identifier       String?
+  group            Group        @relation(fields: [groupId], references: [id])
+  groupId          String
+  name             String?
+  description      String?
+  table            Table
+  type             SequenceType
+  prefix           String?
+  sufix            String?
+  number_next      Int
+  number_increment Int
+  padding          Int
+  active           Boolean      @default(true)
+
+  @@unique([table, groupId], name: "Sequence_table_group_unique_constraint")
+}
+
+enum Table {
+  SEQUENCE
+  GROUP
+  USER
+}
+
+enum PermissionType {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+}
+
+enum SequenceType {
+  INCREMENTAL
+}
+
+model Group {
+  id          String     @id @default(cuid())
+  identifier  String?
+  name        String?
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Sequence    Sequence[]
+  User        User[]
+  Role        Role[]
+}
+
+model User {
+  id         String   @id @default(cuid())
+  group      Group    @relation(fields: [groupId], references: [id])
+  groupId    String
+  identifier String?
+  email      String   @unique
+  password   String
+  name       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  roles      Role[]
+}
+
+model Permission {
+  id         String         @id @default(cuid())
+  permission PermissionType
+  table      Table
+  Role       Role[]
+
+  @@unique([permission, table], name: "Permission_table_unique_constraint")
+}
+
+model Role {
+  id          String       @id @default(cuid())
+  group       Group        @relation(fields: [groupId], references: [id])
+  groupId     String
+  code        String
+  description String?
+  permissions Permission[]
+  active      Boolean      @default(true)
+  users       User[]
+}
